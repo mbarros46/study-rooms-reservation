@@ -1,9 +1,235 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Library Rooms</title></head>
-<body>
-<h1>Reserva de Salas de Estudo</h1>
-<p><a th:href="@{/reservations/mine}">Minhas Reservas</a> | <a th:href="@{/reservations/new}">Nova Reserva</a> | <a th:href="@{/rooms}">Salas (Bibliotecário)</a></p>
-<p><a th:href="@{/oauth2/authorization/google}">Login Google</a> | <a th:href="@{/oauth2/authorization/github}">Login GitHub</a></p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reservas - Biblioteca</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet" type="text/css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <i class="bi bi-book-fill me-2"></i>
+                <span class="fw-bold">Sistema de Reservas</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">
+                            <i class="bi bi-house-fill me-1"></i>Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/reservations/mine}">
+                            <i class="bi bi-calendar-check me-1"></i>Minhas Reservas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/reservations/new}">
+                            <i class="bi bi-plus-circle me-1"></i>Nova Reserva
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/rooms}">
+                            <i class="bi bi-door-open me-1"></i>Salas
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>Login
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/oauth2/authorization/github}">
+                                    <i class="bi bi-github me-2"></i>Login com GitHub
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" th:href="@{/oauth2/authorization/google}">
+                                    <i class="bi bi-google me-2"></i>Login com Google
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="hero-title">📚 Reserva de Salas de Estudo</h1>
+            <p class="hero-subtitle">Gerencie suas reservas de forma simples e eficiente</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a th:href="@{/reservations/new}" class="btn btn-light btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Nova Reserva
+                </a>
+                <a th:href="@{/reservations/mine}" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-calendar-check me-2"></i>Minhas Reservas
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <div class="container my-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-door-open feature-icon"></i>
+                        <div class="stats-number">5</div>
+                        <div class="stats-label">Salas Disponíveis</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-calendar-check feature-icon"></i>
+                        <div class="stats-number">24/7</div>
+                        <div class="stats-label">Disponibilidade</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stats-card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill feature-icon"></i>
+                        <div class="stats-number">100+</div>
+                        <div class="stats-label">Usuários Ativos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="container my-5">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="fw-bold">Como Funciona</h2>
+                <p class="text-muted">Reserve sua sala em apenas 3 passos simples</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">1. Faça Login</h5>
+                        <p class="card-text">Conecte-se usando sua conta GitHub ou Google para acessar o sistema de forma segura.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-calendar-plus"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">2. Escolha Data e Sala</h5>
+                        <p class="card-text">Selecione a sala desejada, data e horário que melhor se adequam às suas necessidades de estudo.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="feature-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h5 class="card-title fw-bold">3. Confirme a Reserva</h5>
+                        <p class="card-text">Finalize sua reserva e receba confirmação instantânea. Gerencie todas suas reservas em um só lugar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header text-center">
+                        <h4 class="mb-0"><i class="bi bi-shield-check me-2"></i>Acesso Seguro</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-center text-muted mb-4">
+                            Entre com sua conta para acessar o sistema de reservas
+                        </p>
+                        
+                        <div class="d-grid gap-3">
+                            <a th:href="@{/oauth2/authorization/github}" class="btn btn-dark btn-lg">
+                                <i class="bi bi-github me-2"></i>
+                                Entrar com GitHub
+                            </a>
+                            
+                            <a th:href="@{/oauth2/authorization/google}" class="btn btn-danger btn-lg">
+                                <i class="bi bi-google me-2"></i>
+                                Entrar com Google
+                            </a>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Seus dados estão protegidos e não são compartilhados
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-book-fill me-2"></i>Sistema de Reservas</h5>
+                    <p class="mb-0">Gerencie suas reservas de salas de estudo de forma simples e eficiente.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <small>
+                            <i class="bi bi-code-slash me-1"></i>
+                            Desenvolvido com Spring Boot & Thymeleaf
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

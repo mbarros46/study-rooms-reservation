@@ -1,29 +1,429 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Reservas (Admin)</title></head>
-<body>
-<h1>Reservas (Bibliotecário)</h1>
-<p><a th:href="@{/rooms}">Salas</a> | <a th:href="@{/reservations/mine}">Minhas Reservas</a></p>
-<table border="1">
-<thead><tr><th>ID</th><th>Sala</th><th>Usuário</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
-<tbody>
-<tr th:each="r : ${reservations}">
-    <td th:text="${r.id}"></td>
-    <td th:text="${r.room.name}"></td>
-    <td th:text="${r.user.email}"></td>
-    <td th:text="${r.startAt}"></td>
-    <td th:text="${r.endAt}"></td>
-    <td th:text="${r.status}"></td>
-    <td>
-        <form th:if="${r.status.name() == 'PENDING'}" th:action="@{|/reservations/approve/${r.id}|}" method="post" style="display:inline">
-            <button type="submit">Aprovar</button>
-        </form>
-        <form th:if="${r.status.name() != 'CANCELED'}" th:action="@{|/reservations/cancel/${r.id}|}" method="post" style="display:inline">
-            <button type="submit">Cancelar</button>
-        </form>
-    </td>
-</tr>
-</tbody>
-</table>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Reservas - Sistema de Reservas</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link th:href="@{/css/styles.css}" rel="stylesheet" type="text/css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <i class="bi bi-book-fill me-2"></i>
+                <span class="fw-bold">Sistema de Reservas</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="bi bi-house-fill me-1"></i>Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/reservations/mine}">
+                            <i class="bi bi-calendar-check me-1"></i>Minhas Reservas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/reservations/new}">
+                            <i class="bi bi-plus-circle me-1"></i>Nova Reserva
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/rooms}">
+                            <i class="bi bi-door-open me-1"></i>Salas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/reservations/admin}">
+                            <i class="bi bi-gear me-1"></i>Admin
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <span class="navbar-text me-3">
+                            <i class="bi bi-shield-check me-1"></i>Bibliotecário
+                        </span>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>Usuário
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/logout}"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bold text-primary mb-2">
+                            <i class="bi bi-gear-fill me-2"></i>Administração de Reservas
+                        </h1>
+                        <p class="text-muted mb-0">Gerencie todas as reservas do sistema</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/rooms}" class="btn btn-outline-primary">
+                            <i class="bi bi-door-open me-2"></i>Gerenciar Salas
+                        </a>
+                        <a th:href="@{/reservations/new}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Nova Reserva
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
+                        <h4 class="mt-2" th:text="${#lists.size(reservations)}">0</h4>
+                        <small>Total de Reservas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock" style="font-size: 2rem;"></i>
+                        <h4 class="mt-2" th:text="${#lists.size(reservations.?[status.name() == 'PENDING'])}">0</h4>
+                        <small>Pendentes de Aprovação</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                        <h4 class="mt-2" th:text="${#lists.size(reservations.?[status.name() == 'APPROVED'])}">0</h4>
+                        <small>Aprovadas</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <i class="bi bi-x-circle" style="font-size: 2rem;"></i>
+                        <h4 class="mt-2" th:text="${#lists.size(reservations.?[status.name() == 'CANCELLED'])}">0</h4>
+                        <small>Canceladas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-3">
+                        <label for="searchUser" class="form-label">
+                            <i class="bi bi-search me-1"></i>Pesquisar por Usuário
+                        </label>
+                        <input type="text" id="searchUser" class="form-control" placeholder="Digite o email do usuário...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterRoom" class="form-label">
+                            <i class="bi bi-door-open me-1"></i>Filtrar por Sala
+                        </label>
+                        <select id="filterRoom" class="form-select">
+                            <option value="">Todas as salas</option>
+                            <option th:each="room : ${rooms}" th:value="${room.name}" th:text="${room.name}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="filterStatus" class="form-label">
+                            <i class="bi bi-toggle-on me-1"></i>Status
+                        </label>
+                        <select id="filterStatus" class="form-select">
+                            <option value="">Todos os status</option>
+                            <option value="PENDING">Pendentes</option>
+                            <option value="APPROVED">Aprovadas</option>
+                            <option value="CANCELLED">Canceladas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservations Table -->
+        <div class="card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>Lista de Reservas
+                </h5>
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <span id="resultCount" th:text="${#lists.size(reservations)}"></span> reserva(s) encontrada(s)
+                </small>
+            </div>
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(reservations)}" class="text-center py-5">
+                    <i class="bi bi-calendar-x text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">Nenhuma reserva encontrada</h4>
+                    <p class="text-muted">Não há reservas no sistema ainda.</p>
+                </div>
+
+                <div th:if="${!#lists.isEmpty(reservations)}" class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <i class="bi bi-hash me-1"></i>ID
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-door-open me-1"></i>Sala
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-person me-1"></i>Usuário
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-calendar-event me-1"></i>Data/Hora
+                                </th>
+                                <th scope="col">
+                                    <i class="bi bi-info-circle me-1"></i>Status
+                                </th>
+                                <th scope="col" class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationsTableBody">
+                            <tr th:each="reservation : ${reservations}" class="reservation-row"
+                                th:data-user="${reservation.user.email}"
+                                th:data-room="${reservation.room.name}"
+                                th:data-status="${reservation.status.name()}">
+                                <td>
+                                    <span class="badge bg-secondary" th:text="'#' + ${reservation.id}"></span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-door-open text-primary me-2"></i>
+                                        <span th:text="${reservation.room.name}" class="fw-medium"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle text-secondary me-2"></i>
+                                        <span th:text="${reservation.user.email}" class="fw-medium"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium" th:text="${#temporals.format(reservation.startAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                        <small class="text-muted">
+                                            até <span th:text="${#temporals.format(reservation.endAt, 'dd/MM/yyyy HH:mm')}"></span>
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:switch="${reservation.status.name()}"
+                                          class="badge">
+                                        <span th:case="'PENDING'" class="badge bg-warning text-dark">
+                                            <i class="bi bi-clock me-1"></i>Pendente
+                                        </span>
+                                        <span th:case="'APPROVED'" class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Aprovada
+                                        </span>
+                                        <span th:case="'CANCELLED'" class="badge bg-danger">
+                                            <i class="bi bi-x-circle me-1"></i>Cancelada
+                                        </span>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <form th:if="${reservation.status.name() == 'PENDING'}" 
+                                              th:action="@{|/reservations/approve/${reservation.id}|}" 
+                                              method="post" 
+                                              class="d-inline"
+                                              onsubmit="return confirm('Tem certeza que deseja aprovar esta reserva?')">
+                                            <button type="submit" 
+                                                    class="btn btn-success btn-sm"
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-placement="top" 
+                                                    title="Aprovar reserva">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <form th:if="${reservation.status.name() != 'CANCELLED'}" 
+                                              th:action="@{|/reservations/cancel/${reservation.id}|}" 
+                                              method="post" 
+                                              class="d-inline"
+                                              onsubmit="return confirm('Tem certeza que deseja cancelar esta reserva?')">
+                                            <button type="submit" 
+                                                    class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-placement="top" 
+                                                    title="Cancelar reserva">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <button type="button" 
+                                                class="btn btn-outline-info btn-sm"
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top" 
+                                                title="Ver detalhes">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h5 class="text-primary">
+                            <i class="bi bi-lightning-charge me-2"></i>Ações Administrativas
+                        </h5>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <button type="button" class="btn btn-success" onclick="approveAllPending()">
+                                <i class="bi bi-check-all me-2"></i>Aprovar Todas Pendentes
+                            </button>
+                            <a th:href="@{/rooms}" class="btn btn-outline-primary">
+                                <i class="bi bi-door-open me-2"></i>Gerenciar Salas
+                            </a>
+                            <a th:href="@{/}" class="btn btn-outline-secondary">
+                                <i class="bi bi-house me-2"></i>Voltar ao Início
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-book-fill me-2"></i>Sistema de Reservas</h5>
+                    <p class="mb-0">Gerencie suas reservas de salas de estudo de forma simples e eficiente.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <small>
+                            <i class="bi bi-code-slash me-1"></i>
+                            Desenvolvido com Spring Boot & Thymeleaf
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/app.js}"></script>
+    
+    <!-- Page-specific JavaScript -->
+    <script>
+        // Filter functionality
+        function filterReservations() {
+            const searchTerm = document.getElementById('searchUser').value.toLowerCase();
+            const roomFilter = document.getElementById('filterRoom').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const rows = document.querySelectorAll('.reservation-row');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const user = row.dataset.user.toLowerCase();
+                const room = row.dataset.room.toLowerCase();
+                const status = row.dataset.status;
+                
+                let show = true;
+                
+                // Search filter
+                if (searchTerm && !user.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                // Room filter
+                if (roomFilter && !room.includes(roomFilter)) {
+                    show = false;
+                }
+                
+                // Status filter
+                if (statusFilter && status !== statusFilter) {
+                    show = false;
+                }
+                
+                row.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+            
+            // Update result count
+            document.getElementById('resultCount').textContent = visibleCount;
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchUser').value = '';
+            document.getElementById('filterRoom').value = '';
+            document.getElementById('filterStatus').value = '';
+            filterReservations();
+        }
+        
+        function approveAllPending() {
+            if (confirm('Tem certeza que deseja aprovar todas as reservas pendentes?')) {
+                // Here you could implement bulk approval functionality
+                showNotification('Funcionalidade de aprovação em lote será implementada.', 'info');
+            }
+        }
+        
+        // Add event listeners
+        document.getElementById('searchUser').addEventListener('input', filterReservations);
+        document.getElementById('filterRoom').addEventListener('change', filterReservations);
+        document.getElementById('filterStatus').addEventListener('change', filterReservations);
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 </body>
 </html>
