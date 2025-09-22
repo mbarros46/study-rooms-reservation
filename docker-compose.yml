@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16
+    container_name: studyrooms_db
+    environment:
+      POSTGRES_DB: studyrooms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d studyrooms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: studyrooms_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/studyrooms
+      DB_USER: postgres
+      DB_PASS: postgres
+      GITHUB_ID: ${GITHUB_ID:-changeme}
+      GITHUB_SECRET: ${GITHUB_SECRET:-changeme}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-changeme}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-changeme}
+    ports:
+      - "8080:8080"
+
+volumes:
+  dbdata:

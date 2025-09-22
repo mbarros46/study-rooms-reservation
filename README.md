@@ -134,9 +134,4 @@ UPDATE users SET role='LIBRARIAN' WHERE email='seu.email@dominio.com';
 - `/rooms/**`, `/reservations/admin`, `POST /reservations/approve/{id}`, `POST /reservations/cancel/{id}` (bibliotecário)
 
 
-
-# Gera os arquivos do wrapper (gradlew, gradlew.bat, gradle/wrapper/*)
-docker run --rm -v ${PWD}:/app -w /app gradle:8.10.0-jdk17 gradle wrapper
-
-# Agora o wrapper existe, rode a app localmente:
-.\gradlew.bat bootRun
+docker compose up --build
