@@ -1,10 +1,11 @@
 package br.com.fiap.epictaskg.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "users_app", uniqueConstraints = {
         @UniqueConstraint(name = "uk_users_email", columnNames = "email")
 })
 public class User {
@@ -13,11 +14,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String name;
 
-    @Column(nullable = false)
+    @Email 
+    @NotBlank
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.STUDENT;
