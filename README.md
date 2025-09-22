@@ -1,5 +1,9 @@
 # Sistema de Reserva de Salas de Estudo (Spring MVC + Thymeleaf)
 
+## Integrantes
+- **Miguel Barros RM556652**
+- **Pedro Valentim RM556826**
+
 ## Stack
 - Spring Boot 3.3 (Web, Thymeleaf, Data JPA, OAuth2 Client, Validation)
 - PostgreSQL 16 (Docker Compose)
