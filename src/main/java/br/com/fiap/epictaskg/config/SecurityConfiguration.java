@@ -1,0 +1,37 @@
+package br.com.fiap.epictaskg.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfiguration {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   CustomOAuth2UserService customOAuth2UserService) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/",
+                        "/login**",
+                        "/oauth2/**",
+                        "/error",
+                        "/css/**", "/js/**", "/images/**", "/webjars/**"
+                ).permitAll()
+                .requestMatchers("/rooms/**").hasRole("LIBRARIAN")
+                .requestMatchers("/reservations/approve/**", "/reservations/cancel/**").hasRole("LIBRARIAN")
+                .requestMatchers("/reservations/**").authenticated()
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth -> oauth
+                .userInfoEndpoint(ui -> ui.userService(customOAuth2UserService))
+                .defaultSuccessUrl("/reservations/mine", true)
+            )
+            .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+
+        return http.build();
+    }
+}

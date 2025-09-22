@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Minhas Reservas</title></head>
+<body>
+<h1>Minhas Reservas</h1>
+<p><a th:href="@{/reservations/new}">Nova</a> | <a th:href="@{/reservations/admin}">Admin</a> | <a th:href="@{/}">Home</a></p>
+<table border="1">
+<thead><tr><th>ID</th><th>Sala</th><th>Início</th><th>Fim</th><th>Status</th></tr></thead>
+<tbody>
+<tr th:each="r : ${reservations}">
+    <td th:text="${r.id}"></td>
+    <td th:text="${r.room.name}"></td>
+    <td th:text="${r.startAt}"></td>
+    <td th:text="${r.endAt}"></td>
+    <td th:text="${r.status}"></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

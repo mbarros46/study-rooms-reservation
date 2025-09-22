@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Reservas (Admin)</title></head>
+<body>
+<h1>Reservas (Bibliotecário)</h1>
+<p><a th:href="@{/rooms}">Salas</a> | <a th:href="@{/reservations/mine}">Minhas Reservas</a></p>
+<table border="1">
+<thead><tr><th>ID</th><th>Sala</th><th>Usuário</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
+<tbody>
+<tr th:each="r : ${reservations}">
+    <td th:text="${r.id}"></td>
+    <td th:text="${r.room.name}"></td>
+    <td th:text="${r.user.email}"></td>
+    <td th:text="${r.startAt}"></td>
+    <td th:text="${r.endAt}"></td>
+    <td th:text="${r.status}"></td>
+    <td>
+        <form th:if="${r.status.name() == 'PENDING'}" th:action="@{|/reservations/approve/${r.id}|}" method="post" style="display:inline">
+            <button type="submit">Aprovar</button>
+        </form>
+        <form th:if="${r.status.name() != 'CANCELED'}" th:action="@{|/reservations/cancel/${r.id}|}" method="post" style="display:inline">
+            <button type="submit">Cancelar</button>
+        </form>
+    </td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

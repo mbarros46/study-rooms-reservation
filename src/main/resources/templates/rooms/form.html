@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Form Sala</title></head>
+<body>
+<h1 th:text="${room.id} != null ? 'Editar Sala' : 'Nova Sala'"></h1>
+<form th:action="${room.id} != null ? @{'/rooms/' + ${room.id}} : @{/rooms}" method="post">
+    <label>Nome: <input type="text" name="name" th:value="${room.name}"/></label><br/>
+    <label>Capacidade: <input type="number" name="capacity" th:value="${room.capacity}"/></label><br/>
+    <label>Local: <input type="text" name="location" th:value="${room.location}"/></label><br/>
+    <label>Ativa: <input type="checkbox" name="active" th:checked="${room.active}"/></label><br/>
+    <button type="submit">Salvar</button>
+</form>
+</body>
+</html>

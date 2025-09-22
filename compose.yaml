@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16
+    container_name: rooms_pg
+    environment:
+      POSTGRES_DB: rooms
+      POSTGRES_USER: rooms
+      POSTGRES_PASSWORD: rooms
+    ports:
+      - "5432:5432"
+    volumes:
+      - rooms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rooms -d rooms"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    container_name: rooms_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/rooms
+      SPRING_DATASOURCE_USERNAME: rooms
+      SPRING_DATASOURCE_PASSWORD: rooms
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      # Configure seus secrets via env/variáveis locais/Render
+      GITHUB_ID: ${GITHUB_ID}
+      GITHUB_SECRET: ${GITHUB_SECRET}
+      GOOGLE_ID: ${GOOGLE_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+    ports:
+      - "8080:8080"
+
+volumes:
+  rooms_pgdata:

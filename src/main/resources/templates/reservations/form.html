@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Nova Reserva</title></head>
+<body>
+<h1>Nova Reserva</h1>
+<p th:if="${error}" th:text="${error}" style="color:red"></p>
+<form th:action="@{/reservations}" method="post">
+    <label>Sala:
+        <select name="roomId">
+            <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.name}"></option>
+        </select>
+    </label><br/>
+    <label>Início (ISO-8601): <input type="text" name="startAtIso" placeholder="2025-09-21T13:00:00-03:00"></label><br/>
+    <label>Fim (ISO-8601): <input type="text" name="endAtIso" placeholder="2025-09-21T15:00:00-03:00"></label><br/>
+    <button type="submit">Reservar</button>
+</form>
+</body>
+</html>
