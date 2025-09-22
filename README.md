@@ -30,20 +30,93 @@ GOOGLE_ID=your_google_client_id_here
 GOOGLE_SECRET=your_google_client_secret_here
 ```
 
-## Como executar
-1. Subir banco:
-```bash
-docker compose up -d
-```
-2. Executar aplicação:
-```bash
-./gradlew bootRun
-```
-3. Login:
-- `/oauth2/authorization/google`
-- `/oauth2/authorization/github`
+## 🚀 Como Executar a Aplicação
 
-Defina `GITHUB_ID`, `GITHUB_SECRET`, `GOOGLE_ID`, `GOOGLE_SECRET` no ambiente.
+### Pré-requisitos
+- Java 17 instalado
+- Docker Desktop rodando
+- Git instalado
+
+### Comandos para Executar (Windows PowerShell)
+
+1. **Clone o repositório** (se ainda não fez):
+```powershell
+git clone https://github.com/mbarros46/study-rooms-reservation.git
+cd study-rooms-reservation
+```
+
+2. **Pare qualquer processo Java conflitante**:
+```powershell
+taskkill /F /IM java.exe
+```
+
+3. **Remova containers antigos** (se existirem):
+```powershell
+docker rm -f rooms_pg
+```
+
+4. **Inicie apenas o banco PostgreSQL**:
+```powershell
+docker compose up -d db
+```
+
+5. **Configure as variáveis de ambiente e execute a aplicação**:
+```powershell
+$env:GITHUB_ID="Ov23liLtdUza7rewjQ9r"
+$env:GITHUB_SECRET="789d41d8d0d5dc7cdf74f1c44630160b4ba852e5"
+$env:SPRING_DOCKER_COMPOSE_ENABLED="false"
+.\gradlew.bat bootRun
+```
+
+**OU use o script automatizado**:
+```powershell
+.\run-with-env.bat
+```
+
+6. **Acesse a aplicação**:
+   - Abra seu navegador em: `http://localhost:8082`
+
+### Comandos de Limpeza (se necessário)
+
+**Parar tudo**:
+```powershell
+# Parar aplicação Spring Boot (Ctrl+C no terminal)
+# Parar containers Docker
+docker compose down
+```
+
+**Resetar banco de dados**:
+```powershell
+docker compose down -v
+docker compose up -d db
+```
+
+### ⚠️ Troubleshooting
+
+**Erro "Port already in use"**:
+```powershell
+# Verificar o que está usando a porta 8082
+netstat -ano | findstr :8082
+# Matar o processo (substitua PID pelo número retornado)
+taskkill /F /PID <PID>
+```
+
+**Erro "Gradle lock file"**:
+```powershell
+# Limpar cache do Gradle
+.\gradlew --stop
+rm -rf .gradle
+```
+
+**Erro OAuth 404**:
+- Verifique se está acessando `http://localhost:8082` (não 8080)
+- Confirme que o GitHub OAuth App está configurado com callback: `http://localhost:8082/login/oauth2/code/github`
+
+**Container PostgreSQL não inicia**:
+```powershell
+docker ps -a
+docker logs rooms_pg
+```
 
 ## Perfis
 Utiliza `application.properties` padrão apontando para Postgres local do Compose.
