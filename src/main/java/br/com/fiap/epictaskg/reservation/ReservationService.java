@@ -55,7 +55,7 @@ public class ReservationService {
         if (r.getStatus() == ReservationStatus.CANCELED) {
             throw new IllegalStateException("Cannot approve a canceled reservation");
         }
-        if (reservationRepository.existsOverlap(r.getRoom().getId(), r.getStartAt(), r.getEndAt())) {
+        if (reservationRepository.existsOverlapExcluding(r.getRoom().getId(), reservationId, r.getStartAt(), r.getEndAt())) {
             throw new IllegalStateException("Schedule conflict on approve");
         }
         r.setStatus(ReservationStatus.APPROVED);

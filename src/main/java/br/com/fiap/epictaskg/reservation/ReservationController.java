@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -76,8 +77,13 @@ public class ReservationController {
         User user = userRepository.findByEmail(finalEmail)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + finalEmail));
 
-        OffsetDateTime start = OffsetDateTime.parse(startAtIso).withOffsetSameInstant(ZoneOffset.UTC);
-        OffsetDateTime end = OffsetDateTime.parse(endAtIso).withOffsetSameInstant(ZoneOffset.UTC);
+        // Parse datetime-local format (2025-09-22T17:00) to LocalDateTime first
+        LocalDateTime startLocal = LocalDateTime.parse(startAtIso);
+        LocalDateTime endLocal = LocalDateTime.parse(endAtIso);
+        
+        // Convert to OffsetDateTime with UTC offset
+        OffsetDateTime start = startLocal.atOffset(ZoneOffset.UTC);
+        OffsetDateTime end = endLocal.atOffset(ZoneOffset.UTC);
 
         reservationService.create(roomId, user.getId(), start, end);
         return "redirect:/reservations/mine";

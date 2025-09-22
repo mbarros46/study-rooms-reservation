@@ -133,7 +133,7 @@
                 <div class="card bg-danger text-white">
                     <div class="card-body text-center">
                         <i class="bi bi-x-circle" style="font-size: 2rem;"></i>
-                        <h4 class="mt-2" th:text="${#lists.size(reservations.?[status.name() == 'CANCELLED'])}">0</h4>
+                        <h4 class="mt-2" th:text="${#lists.size(reservations.?[status.name() == 'CANCELED'])}">0</h4>
                         <small>Canceladas</small>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
                             <option value="">Todos os status</option>
                             <option value="PENDING">Pendentes</option>
                             <option value="APPROVED">Aprovadas</option>
-                            <option value="CANCELLED">Canceladas</option>
+                            <option value="CANCELED">Canceladas</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -257,7 +257,7 @@
                                         <span th:case="'APPROVED'" class="badge bg-success">
                                             <i class="bi bi-check-circle me-1"></i>Aprovada
                                         </span>
-                                        <span th:case="'CANCELLED'" class="badge bg-danger">
+                                        <span th:case="'CANCELED'" class="badge bg-danger">
                                             <i class="bi bi-x-circle me-1"></i>Cancelada
                                         </span>
                                     </span>
@@ -278,7 +278,7 @@
                                             </button>
                                         </form>
                                         
-                                        <form th:if="${reservation.status.name() != 'CANCELLED'}" 
+                                        <form th:if="${reservation.status.name() != 'CANCELED'}" 
                                               th:action="@{|/reservations/cancel/${reservation.id}|}" 
                                               method="post" 
                                               class="d-inline"

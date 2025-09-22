@@ -17,6 +17,7 @@ public class RoomController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("rooms", roomRepository.findAll());
+        model.addAttribute("room", new Room());  // Adicionar objeto room vazio para o formulário
         return "rooms/list";
     }
 
