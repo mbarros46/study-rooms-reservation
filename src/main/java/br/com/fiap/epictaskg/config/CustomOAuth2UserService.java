@@ -33,17 +33,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String providerUserNameAttr = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
-        String email;
-        String name;
-
+        // Extrair dados do GitHub
         Object emailObj = attrs.get("email");
         String emailStr = emailObj != null ? String.valueOf(emailObj) : null;
-
         Object nameObj = attrs.get("name");
         String nameStr = nameObj != null ? String.valueOf(nameObj) : null;
 
+        // GitHub pode não ter email público - usar fallback
         if (emailStr == null || emailStr.isBlank()) {
-            // GitHub pode não retornar email público; cai para ID/username
             Object loginObj = attrs.get("login");
             if (loginObj != null) {
                 emailStr = loginObj + "@users.noreply.github.com";
@@ -51,16 +48,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
-        email = (emailStr != null && !emailStr.isBlank()) ? emailStr : "unknown@example.com";
-        name = (nameStr != null && !nameStr.isBlank()) ? nameStr : "Unknown";
+        // Validações finais
+        final String finalEmail = (emailStr != null && !emailStr.isBlank()) ? emailStr : "unknown@example.com";
+        final String finalName = (nameStr != null && !nameStr.isBlank()) ? nameStr : "Unknown User";
 
-        Optional<User> existing = userRepository.findByEmail(email);
-        User user = existing.orElseGet(() -> userRepository.save(new User(name, email, Role.STUDENT)));
+        Optional<User> existing = userRepository.findByEmail(finalEmail);
+        User user = existing.orElseGet(() -> userRepository.save(new User(finalName, finalEmail, Role.STUDENT)));
 
         return new DefaultOAuth2User(
                 Set.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())),
                 attrs,
-                providerUserNameAttr != null && !providerUserNameAttr.isBlank() ? providerUserNameAttr : "sub"
+                providerUserNameAttr != null && !providerUserNameAttr.isBlank() ? providerUserNameAttr : "id"
         );
     }
 }

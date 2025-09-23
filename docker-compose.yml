@@ -28,8 +28,6 @@ services:
       DB_PASS: postgres
       GITHUB_ID: ${GITHUB_ID:-changeme}
       GITHUB_SECRET: ${GITHUB_SECRET:-changeme}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-changeme}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-changeme}
     ports:
       - "8080:8080"
 
