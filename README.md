@@ -1,128 +1,179 @@
-# Sistema de Reserva de Salas de Estudo (Spring MVC + Thymeleaf)
+# 📚 Study Rooms Reservation System
 
-## Integrantes
+Sistema de reserva de salas de estudo desenvolvido com **Spring Boot**, **PostgreSQL**, **Thymeleaf** e **Docker**.
+
+## 👥 **Integrantes**
 - **Miguel Barros RM556652**
 - **Pedro Valentim RM556826**
 
-## Stack
-- Spring Boot 3.3 (Web, Thymeleaf, Data JPA, OAuth2 Client, Validation)
-- PostgreSQL 16 (Docker Compose)
-- Flyway (migrações)
-- Java 17
+## 🚀 **Instalação Completa**
 
-## Configuração OAuth2
+### **📋 Pré-requisitos**
+- Docker e Docker Compose instalados
+- Conta no GitHub
 
-### 1. Configurar GitHub OAuth App
-1. Vá em GitHub → Settings → Developer settings → OAuth Apps
-2. Clique em "New OAuth App"
-3. Configure:
-   - **Application name:** `projeto_diamante` (ou outro nome)
-   - **Homepage URL:** `http://localhost:8082`
-   - **Authorization callback URL:** `http://localhost:8082/login/oauth2/code/github`
-4. Após criar, copie o **Client ID** e **Client Secret**
+### **⚠️ IMPORTANTE: Configuração OAuth2 Obrigatória**
 
-### 2. Configurar Variáveis de Ambiente
-1. Crie um arquivo `.env` na raiz do projeto
-2. Adicione suas credenciais OAuth2:
+**Sem configurar o GitHub OAuth2, o projeto NÃO funcionará!**
+
+### **1. Clonar o projeto**
 ```bash
-# GitHub OAuth Credentials
-GITHUB_ID=your_github_client_id_here
-GITHUB_SECRET=your_github_client_secret_here
-
-# Google OAuth Credentials (opcional)
-GOOGLE_ID=your_google_client_id_here
-GOOGLE_SECRET=your_google_client_secret_here
-```
-
-## 🚀 Como Executar a Aplicação
-
-### Pré-requisitos
-- Java 17 instalado
-- Docker Desktop rodando
-- Git instalado
-
-### Comandos para Executar (Windows PowerShell)
-
-1. **Clone o repositório** (se ainda não fez):
-```powershell
 git clone https://github.com/mbarros46/study-rooms-reservation.git
 cd study-rooms-reservation
 ```
 
-2. **Pare qualquer processo Java conflitante**:
-```powershell
-taskkill /F /IM java.exe
+### **2. Configurar GitHub OAuth2**
+
+#### **2.1. Criar OAuth App no GitHub**
+1. Acesse: https://github.com/settings/developers
+2. Clique em **"OAuth Apps"** → **"New OAuth App"**
+3. Preencha:
+   - **Application name**: `Study Rooms Reservation`
+   - **Homepage URL**: `http://localhost:8080`
+   - **Authorization callback URL**: `http://localhost:8080/login/oauth2/code/github`
+4. Clique em **"Register application"**
+5. **Copie o Client ID**
+6. Clique em **"Generate a new client secret"** e **copie o Client Secret**
+
+#### **2.2. Criar Arquivo de Configuração**
+Crie um arquivo `.env` na raiz do projeto:
+
+```bash
+# .env
+GITHUB_ID=seu-client-id-do-github
+GITHUB_SECRET=seu-client-secret-do-github
 ```
 
-3. **Remova containers antigos** (se existirem):
-```powershell
-docker rm -f rooms_pg
+⚠️ **IMPORTANTE**: Substitua pelos valores reais do seu GitHub OAuth App!
+
+### **3. Executar a Aplicação**
+```bash
+docker compose up --build
 ```
 
-4. **Inicie apenas o banco PostgreSQL**:
-```powershell
-docker compose up -d db
+### **4. Acessar o Sistema**
+1. Abra: http://localhost:8080
+2. Clique em **"Entrar com GitHub"**
+3. Autorize a aplicação
+4. Pronto! Sistema funcionando
+
+## ✅ **Checklist de Verificação**
+
+- [ ] Docker e Docker Compose instalados
+- [ ] Repositório clonado
+- [ ] OAuth App criado no GitHub
+- [ ] Arquivo `.env` criado com credenciais corretas
+- [ ] `docker compose up --build` executado
+- [ ] Login com GitHub funcionando
+
+## �️ **Tecnologias Utilizadas**
+
+- **Backend**: Spring Boot 3.x, Spring Security, JPA/Hibernate
+- **Frontend**: Thymeleaf, Bootstrap 5, JavaScript
+- **Database**: PostgreSQL + Flyway (migrações)
+- **Containerização**: Docker + Docker Compose
+- **Autenticação**: GitHub OAuth2
+
+## ✨ **Funcionalidades**
+
+### **👤 STUDENT** (Padrão)
+- 🔍 Visualizar salas disponíveis
+- 📅 Criar reservas
+- 📋 Gerenciar suas próprias reservas
+
+### **👨‍💼 LIBRARIAN** (Admin)
+- ✅ Todas as permissões de STUDENT
+- ⚡ Aprovar/cancelar qualquer reserva
+- 🏢 Adicionar/editar/remover salas
+- 📊 Acesso ao painel administrativo
+
+## 📁 **Estrutura do Projeto**
+
+```
+src/main/
+├── java/br/com/fiap/epictaskg/
+│   ├── config/          # Configurações (Security, OAuth2)
+│   ├── user/            # Entidades e lógica de usuários
+│   ├── room/            # Entidades e lógica de salas
+│   ├── reservation/     # Entidades e lógica de reservas
+│   └── Application.java # Classe principal
+├── resources/
+│   ├── templates/       # Templates Thymeleaf
+│   ├── static/          # CSS, JS, imagens
+│   ├── db/migration/    # Scripts Flyway
+│   └── application.properties
+└── docker-compose.yml   # Configuração Docker
 ```
 
-5. **Configure as variáveis de ambiente e execute a aplicação**:
-```powershell
-$env:GITHUB_ID="Ov23liLtdUza7rewjQ9r"
-$env:GITHUB_SECRET="789d41d8d0d5dc7cdf74f1c44630160b4ba852e5"
-$env:SPRING_DOCKER_COMPOSE_ENABLED="false"
-.\gradlew.bat bootRun
+## 🗄️ **Banco de Dados**
+
+O sistema usa **PostgreSQL** com **Flyway** para versionamento:
+
+- **V1**: Estrutura inicial (users_app, rooms, reservations)
+- **V2**: Trigger para prevenir sobreposição de horários
+- **V3**: Dados de teste (usuários, salas, reservas)
+
+### **🔒 Dados de Teste Incluídos**
+
+O sistema já vem com dados de teste:
+- **Usuários**: Alguns usuários já cadastrados
+- **Salas**: 5 salas de estudo disponíveis
+- **Reservas**: Algumas reservas de exemplo
+
+## 🐛 **Solução de Problemas**
+
+### ❌ **Erro: "redirect_uri_mismatch"**
+- **Causa**: URL de callback incorreta
+- **Solução**: Verifique se no GitHub está exatamente: `http://localhost:8080/login/oauth2/code/github`
+
+### ❌ **Erro: "invalid_client"**
+- **Causa**: Credenciais incorretas no `.env`
+- **Solução**: Verifique se `GITHUB_ID` e `GITHUB_SECRET` estão corretos
+
+### ❌ **Erro: "Application error"**
+- **Causa**: Arquivo `.env` não foi criado
+- **Solução**: Crie o arquivo `.env` com as credenciais do GitHub
+
+### ❌ **Erro de Banco**
+- Aguarde o PostgreSQL inicializar completamente
+- Verifique os logs: `docker compose logs db`
+
+### ❌ **Erro de Build**
+- Limpe o cache: `docker compose down -v`
+- Rebuild: `docker compose up --build`
+
+## 🎯 **Comandos Essenciais**
+
+```bash
+# 1. Clonar
+git clone https://github.com/mbarros46/study-rooms-reservation.git
+cd study-rooms-reservation
+
+# 2. Criar .env (com suas credenciais do GitHub)
+echo "GITHUB_ID=seu-client-id" > .env
+echo "GITHUB_SECRET=seu-client-secret" >> .env
+
+# 3. Executar
+docker compose up --build
+
+# 4. Acessar: http://localhost:8080
 ```
 
-**OU use o script automatizado**:
-```powershell
-.\run-with-env.bat
+## 📄 **Estrutura Esperada**
+
+```
+study-rooms-reservation/
+├── .env                    # ← DEVE ser criado por você
+├── docker-compose.yml
+├── Dockerfile
+├── README.md
+└── src/
+    └── ...
 ```
 
-6. **Acesse a aplicação**:
-   - Abra seu navegador em: `http://localhost:8082`
+---
 
-### Comandos de Limpeza (se necessário)
-
-**Parar tudo**:
-```powershell
-# Parar aplicação Spring Boot (Ctrl+C no terminal)
-# Parar containers Docker
-docker compose down
-```
-
-**Resetar banco de dados**:
-```powershell
-docker compose down -v
-docker compose up -d db
-```
-
-### ⚠️ Troubleshooting
-
-**Erro "Port already in use"**:
-```powershell
-# Verificar o que está usando a porta 8082
-netstat -ano | findstr :8082
-# Matar o processo (substitua PID pelo número retornado)
-taskkill /F /PID <PID>
-```
-
-**Erro "Gradle lock file"**:
-```powershell
-# Limpar cache do Gradle
-.\gradlew --stop
-rm -rf .gradle
-```
-
-**Erro OAuth 404**:
-- Verifique se está acessando `http://localhost:8082` (não 8080)
-- Confirme que o GitHub OAuth App está configurado com callback: `http://localhost:8082/login/oauth2/code/github`
-
-**Container PostgreSQL não inicia**:
-```powershell
-docker ps -a
-docker logs rooms_pg
-```
-
-## Perfis
+**⚠️ ATENÇÃO**: Sem o arquivo `.env` com credenciais válidas do GitHub, o login não funcionará!
 Utiliza `application.properties` padrão apontando para Postgres local do Compose.
 
 ## Papéis
